@@ -305,7 +305,7 @@ export default {
 
     async fetchGastosPorTipo() {
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/sumExpenseType');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/sumExpenseType');
         const data = await response.json();
         
         console.log('Resposta da API gastos por tipo:', data);
@@ -329,7 +329,7 @@ export default {
     async fetchDeputadosComGastos() {
       this.isLoadingDeputados = true;
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/getWithExpenses');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/getWithExpenses');
         const data = await response.json();
         
         console.log('Deputados com gastos carregados:', data);
@@ -349,7 +349,7 @@ export default {
 
     async fetchDeputadosPorPartido() {
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/countDeputiesByParty');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/countDeputiesByParty');
         const data = await response.json();
         
         if (data && data.original && Array.isArray(data.original)) {
@@ -366,7 +366,7 @@ export default {
 
     async fetchEstados() {
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/sumStateAbbr');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/sumStateAbbr');
         const data = await response.json();
         this.totalEstadosApi = data;
       } catch (error) {
@@ -376,7 +376,7 @@ export default {
 
     async fetchTotalDeputados() {
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/totalDeputies');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/totalDeputies');
         const data = await response.json();
         this.totalDeputadosApi = Array.isArray(data) ? data[0] : data;
       } catch (error) {
@@ -386,7 +386,7 @@ export default {
 
     async fetchTotalGastos() {
       try {
-        const response = await fetch('http://https://back-retta-deploy-l88n5.sevalla.app/api/sumNetValueTotal');
+        const response = await fetch('https://back-retta-deploy-l88n5.sevalla.app/api/sumNetValueTotal');
         const data = await response.json();
         this.GastosTotaisApi = data;
       } catch (error) {
