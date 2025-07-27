@@ -94,7 +94,7 @@ const login = async () => {
     if (email.value === 'admin@admin.com' && password.value === 'admin') {
       showSnackbar('Login realizado com sucesso!', 'success')
       setTimeout(() => {
-        window.location.href = 'https://retta-front-deploy-production.up.railway.app/home'
+        window.location.href = 'gastos-deputados.up.railway.app/home'
       }, 1000)
     } else {
       showSnackbar('Credenciais inválidas', 'error')
