@@ -49,7 +49,6 @@
                 block
                 :loading="loading"
               >
-                <v-icon class="mr-2">mdi-login</v-icon>
                 Entrar
               </v-btn>
               <v-divider class="my-4" />

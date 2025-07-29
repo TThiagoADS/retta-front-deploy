@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-card mb-6">
+    <div class="mb-6">
       <div class="dashboard-header">
         <h1 class="display-2 font-weight-bold">
-         <b></b> 
+         Desafio Retta
         </h1>
         <p class="subtitle-1 mt-2">Análise completa dos dados parlamentares</p>
       </div>
@@ -297,7 +297,6 @@ export default {
         ]);
         
         this.isDataLoaded = true;
-        console.log('Todos os dados carregados');
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       }
@@ -605,6 +604,7 @@ export default {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
+  border-radius: 20px 20px 20px 20px;
 }
 
 .dashboard-header {
@@ -612,7 +612,7 @@ export default {
   color: white;
   text-align: center;
   padding: 2rem;
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px 20px 20px 20px;
 }
 
 .display-2 {
