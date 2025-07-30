@@ -268,12 +268,17 @@ export default {
     await this.loadChartJS();
     await this.loadAllData();
     
-    this.$nextTick(() => {
+    // Aguardar o DOM ser completamente renderizado
+    setTimeout(() => {
       this.createCharts();
-    });
+    }, 200);
+    
+    // Recriar gráficos quando a tela for redimensionada
+    window.addEventListener('resize', this.handleResize);
   },
   beforeUnmount() {
     this.destroyCharts();
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     async loadChartJS() {
@@ -486,9 +491,24 @@ export default {
     async refreshData() {
       this.destroyCharts();
       await this.loadAllData();
-      this.$nextTick(() => {
+      
+      // Aguardar um pouco mais para garantir que o DOM foi atualizado
+      setTimeout(() => {
         this.createCharts();
-      });
+      }, 100);
+    },
+
+    handleResize() {
+      // Debounce do redimensionamento
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        if (this.partidosChart) {
+          this.destroyCharts();
+          setTimeout(() => {
+            this.createCharts();
+          }, 100);
+        }
+      }, 300);
     },
 
     destroyCharts() {
@@ -506,6 +526,18 @@ export default {
 
       const partidosCanvas = document.getElementById(this.partidosChartId);
       if (partidosCanvas && this.deputadosPorPartido && this.deputadosPorPartido.length > 0) {
+        // Limpar canvas antes de criar novo gráfico
+        const ctx = partidosCanvas.getContext('2d');
+        ctx.clearRect(0, 0, partidosCanvas.width, partidosCanvas.height);
+        
+        // Configurar dimensões do canvas
+        const container = partidosCanvas.parentElement;
+        const containerWidth = container.offsetWidth - 40; // Subtraindo padding
+        const containerHeight = container.offsetHeight - 40;
+        
+        partidosCanvas.style.width = containerWidth + 'px';
+        partidosCanvas.style.height = containerHeight + 'px';
+        
         const labels = this.deputadosPorPartido.map(item => item.party_abbr);
         const data = this.deputadosPorPartido.map(item => item.total);
         
@@ -517,6 +549,9 @@ export default {
           '#F8C471', '#82E0AA', '#F1948A', '#AED6F1'
         ];
 
+        // Detectar se é mobile
+        const isMobile = window.innerWidth < 768;
+        
         // eslint-disable-next-line no-undef
         this.partidosChart = new Chart(partidosCanvas, {
           type: 'bar',
@@ -527,15 +562,23 @@ export default {
               data: data,
               backgroundColor: backgroundColors.slice(0, data.length),
               borderColor: backgroundColors.slice(0, data.length).map(color => color + '80'),
-              borderWidth: 2,
-              borderRadius: 8,
+              borderWidth: isMobile ? 1 : 2,
+              borderRadius: isMobile ? 4 : 8,
               borderSkipped: false,
             }]
           },
           options: {
-            indexAxis: 'y',
+            indexAxis: isMobile ? 'x' : 'y', // Vertical em mobile, horizontal em desktop
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10
+              }
+            },
             plugins: {
               legend: {
                 display: false
@@ -544,9 +587,15 @@ export default {
                 backgroundColor: 'rgba(0,0,0,0.8)',
                 titleColor: '#fff',
                 bodyColor: '#fff',
+                titleFont: {
+                  size: isMobile ? 12 : 14
+                },
+                bodyFont: {
+                  size: isMobile ? 11 : 13
+                },
                 callbacks: {
                   label: function(context) {
-                    return `${context.parsed.x} deputados`;
+                    return `${isMobile ? context.parsed.y : context.parsed.x} deputados`;
                   }
                 }
               }
@@ -555,29 +604,40 @@ export default {
               x: {
                 beginAtZero: true,
                 grid: {
-                  color: 'rgba(0,0,0,0.1)'
+                  color: 'rgba(0,0,0,0.1)',
+                  drawBorder: false
                 },
                 ticks: {
                   font: {
-                    size: window.innerWidth < 768 ? 10 : 12
-                  }
+                    size: isMobile ? 9 : 11
+                  },
+                  maxRotation: isMobile ? 45 : 0,
+                  color: '#666'
                 }
               },
               y: {
+                beginAtZero: true,
                 grid: {
-                  display: false
+                  display: isMobile ? true : false,
+                  color: 'rgba(0,0,0,0.1)',
+                  drawBorder: false
                 },
                 ticks: {
                   font: {
-                    size: window.innerWidth < 768 ? 10 : 12,
+                    size: isMobile ? 9 : 11,
                     weight: 'bold'
-                  }
+                  },
+                  color: '#666'
                 }
               }
             },
             animation: {
-              duration: 1500,
+              duration: isMobile ? 800 : 1500,
               easing: 'easeInOutQuart'
+            },
+            onResize: (chart) => {
+              // Callback para redimensionamento
+              chart.update('none');
             }
           }
         });
@@ -686,6 +746,17 @@ export default {
   padding: 20px;
   height: 350px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.chart-container canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .expenses-list {
@@ -1076,6 +1147,12 @@ export default {
   
   .chart-container {
     height: 300px;
+    padding: 15px;
+  }
+  
+  .chart-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
 }
 
@@ -1122,6 +1199,11 @@ export default {
   .chart-container {
     height: 250px;
     padding: 15px;
+  }
+  
+  .chart-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
   
   .expenses-list {
@@ -1295,6 +1377,11 @@ export default {
     padding: 10px;
   }
   
+  .chart-container canvas {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  
   .deputies-grid {
     padding: 10px;
     gap: 12px;
@@ -1378,4 +1465,5 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 }
- </style>
+
+</style>
