@@ -3,9 +3,9 @@
     <div class="mb-6">
       <div class="dashboard-header">
         <h1 class="display-2 font-weight-bold">
-         Desafio Retta
+          Análise dos Gastos dos Deputados
         </h1>
-        <p class="subtitle-1 mt-2">Análise completa dos dados parlamentares</p>
+        <p class="subtitle-1 mt-2"></p>
       </div>
     </div>
 
@@ -111,15 +111,17 @@
               placeholder="Buscar por nome, partido, estado ou valor..."
               class="search-input"
             />
-            <select v-model="sortField" class="sort-select" @change="applySorting">
-              <option value="name">Ordenar por Nome</option>
-              <option value="party_abbr">Ordenar por Partido</option>
-              <option value="state_abbr">Ordenar por Estado</option>
-              <option value="total_expenses_numeric">Ordenar por Gastos</option>
-            </select>
-            <button @click="toggleSortOrder" class="sort-button">
-              {{ sortOrder === 'asc' ? '⬆️' : '⬇️' }}
-            </button>
+            <div class="sort-controls">
+              <select v-model="sortField" class="sort-select" @change="applySorting">
+                <option value="name">Nome</option>
+                <option value="party_abbr">Partido</option>
+                <option value="state_abbr">Estado</option>
+                <option value="total_expenses_numeric">Gastos</option>
+              </select>
+              <button @click="toggleSortOrder" class="sort-button">
+                {{ sortOrder === 'asc' ? '⬆️' : '⬇️' }}
+              </button>
+            </div>
           </div>
         </div>
         
@@ -165,22 +167,22 @@
           <button 
             @click="changePage(currentPage - 1)" 
             :disabled="currentPage <= 1"
-            class="pagination-btn"
+            class="pagination-btn pagination-btn-mobile"
           >
-            ◀️ Anterior
+            ◀️
           </button>
           
           <span class="pagination-info">
-            Página {{ currentPage }} de {{ totalPages }} 
-            ({{ filteredDeputados.length }} deputados)
+            <span class="page-text">{{ currentPage }}/{{ totalPages }}</span>
+            <span class="results-text">({{ filteredDeputados.length }} deputados)</span>
           </span>
           
           <button 
             @click="changePage(currentPage + 1)" 
             :disabled="currentPage >= totalPages"
-            class="pagination-btn"
+            class="pagination-btn pagination-btn-mobile"
           >
-            Próxima ▶️
+            ▶️
           </button>
         </div>
       </div>
@@ -497,90 +499,90 @@ export default {
     },
 
     createCharts() {
-  if (!window.Chart) {
-    console.error('Chart.js não carregado');
-    return;
-  }
-
-  const partidosCanvas = document.getElementById(this.partidosChartId);
-  if (partidosCanvas && this.deputadosPorPartido && this.deputadosPorPartido.length > 0) {
-    const labels = this.deputadosPorPartido.map(item => item.party_abbr);
-    const data = this.deputadosPorPartido.map(item => item.total);
-    
-    const backgroundColors = [
-      '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-      '#9966FF', '#FF9F40', '#FF6B6B', '#4ECDC4',
-      '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
-      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-      '#F8C471', '#82E0AA', '#F1948A', '#AED6F1'
-    ];
-
-    // eslint-disable-next-line no-undef
-    this.partidosChart = new Chart(partidosCanvas, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Número de Deputados',
-          data: data,
-          backgroundColor: backgroundColors.slice(0, data.length),
-          borderColor: backgroundColors.slice(0, data.length).map(color => color + '80'),
-          borderWidth: 2,
-          borderRadius: 8,
-          borderSkipped: false,
-        }]
-      },
-      options: {
-        indexAxis: 'y', // Barras horizontais
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            titleColor: '#fff',
-            bodyColor: '#fff',
-            callbacks: {
-              label: function(context) {
-                return `${context.parsed.x} deputados`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(0,0,0,0.1)'
-            },
-            ticks: {
-              font: {
-                size: 12
-              }
-            }
-          },
-          y: {
-            grid: {
-              display: false
-            },
-            ticks: {
-              font: {
-                size: 12,
-                weight: 'bold'
-              }
-            }
-          }
-        },
-        animation: {
-          duration: 1500,
-          easing: 'easeInOutQuart'
-        }
+      if (!window.Chart) {
+        console.error('Chart.js não carregado');
+        return;
       }
-    });
-  }
-}
+
+      const partidosCanvas = document.getElementById(this.partidosChartId);
+      if (partidosCanvas && this.deputadosPorPartido && this.deputadosPorPartido.length > 0) {
+        const labels = this.deputadosPorPartido.map(item => item.party_abbr);
+        const data = this.deputadosPorPartido.map(item => item.total);
+        
+        const backgroundColors = [
+          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+          '#9966FF', '#FF9F40', '#FF6B6B', '#4ECDC4',
+          '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
+          '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+          '#F8C471', '#82E0AA', '#F1948A', '#AED6F1'
+        ];
+
+        // eslint-disable-next-line no-undef
+        this.partidosChart = new Chart(partidosCanvas, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Número de Deputados',
+              data: data,
+              backgroundColor: backgroundColors.slice(0, data.length),
+              borderColor: backgroundColors.slice(0, data.length).map(color => color + '80'),
+              borderWidth: 2,
+              borderRadius: 8,
+              borderSkipped: false,
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                callbacks: {
+                  label: function(context) {
+                    return `${context.parsed.x} deputados`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: {
+                  color: 'rgba(0,0,0,0.1)'
+                },
+                ticks: {
+                  font: {
+                    size: window.innerWidth < 768 ? 10 : 12
+                  }
+                }
+              },
+              y: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  font: {
+                    size: window.innerWidth < 768 ? 10 : 12,
+                    weight: 'bold'
+                  }
+                }
+              }
+            },
+            animation: {
+              duration: 1500,
+              easing: 'easeInOutQuart'
+            }
+          }
+        });
+      }
+    }
   }
 };
 </script>
@@ -604,7 +606,6 @@ export default {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 20px;
-  border-radius: 20px 20px 20px 20px;
 }
 
 .dashboard-header {
@@ -612,7 +613,7 @@ export default {
   color: white;
   text-align: center;
   padding: 2rem;
-  border-radius: 20px 20px 20px 20px;
+  border-radius: 20px;
 }
 
 .display-2 {
@@ -676,7 +677,7 @@ export default {
 
 .charts-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 20px;
   margin-bottom: 30px;
 }
@@ -796,40 +797,49 @@ export default {
 
 .search-controls {
   display: flex;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
 }
 
 .search-input {
-  padding: 10px 15px;
+  padding: 12px 16px;
   border: 2px solid #ddd;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
-  flex: 1;
-  max-width: 300px;
+  width: 100%;
 }
 
 .search-input:focus {
   border-color: #1976d2;
 }
 
+.sort-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .sort-select {
-  padding: 10px;
+  padding: 12px;
   border: 2px solid #ddd;
   border-radius: 8px;
   background: white;
   cursor: pointer;
+  font-size: 14px;
+  flex: 1;
 }
 
 .sort-button {
-  padding: 10px 15px;
+  padding: 12px 16px;
   border: 2px solid #1976d2;
   background: #1976d2;
   color: white;
   border-radius: 8px;
   cursor: pointer;
   font-size: 16px;
+  min-width: 48px;
 }
 
 .sort-button:hover {
@@ -871,6 +881,12 @@ export default {
   display: flex;
   align-items: center;
   gap: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.deputy-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .deputy-photo {
@@ -912,6 +928,7 @@ export default {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .party-chip, .state-chip {
@@ -921,6 +938,7 @@ export default {
   font-weight: 500;
   color: white;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .state-chip {
@@ -943,6 +961,7 @@ export default {
 .expense-amount {
   font-weight: bold;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .expense-high {
@@ -964,15 +983,21 @@ export default {
   gap: 20px;
   padding: 20px;
   border-top: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
-  padding: 10px 20px;
+  padding: 12px 20px;
   border: 2px solid #1976d2;
   background: white;
   color: #1976d2;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 16px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pagination-btn:hover:not(:disabled) {
@@ -988,6 +1013,20 @@ export default {
 .pagination-info {
   font-weight: 500;
   color: #666;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.results-text {
+  font-size: 0.85rem;
+  color: #888;
 }
 
 .floating-action {
@@ -1004,46 +1043,134 @@ export default {
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   z-index: 1000;
+  transition: transform 0.2s ease;
 }
 
 .floating-action:hover {
   background: linear-gradient(135deg, #1565c0, #0d47a1);
+  transform: scale(1.1);
 }
 
-@media (max-width: 768px) {
+/* Responsividade para tablets */
+@media (max-width: 1024px) {
   .dashboard-container {
-    padding: 10px;
-  }
-  
-  .stats-row {
-    grid-template-columns: 1fr;
+    padding: 15px;
   }
   
   .charts-section {
     grid-template-columns: 1fr;
   }
   
-  .deputies-grid {
-    grid-template-columns: 1fr;
-    padding: 15px;
+  .stats-row {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .stats-card {
+    padding: 20px;
+  }
+  
+  .stats-number {
+    font-size: 1.8rem;
+  }
+  
+  .chart-container {
+    height: 300px;
+  }
+}
+
+/* Responsividade para smartphones */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 10px;
   }
   
   .display-2 {
     font-size: 1.8rem;
   }
   
-  .card-header {
-    flex-direction: column;
+  .dashboard-header {
+    padding: 1.5rem;
+  }
+  
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stats-card {
+    padding: 15px;
+  }
+  
+  .stats-icon {
+    font-size: 2.5rem;
+  }
+  
+  .stats-number {
+    font-size: 1.5rem;
+  }
+  
+  .stats-label {
+    font-size: 0.9rem;
+  }
+  
+  .charts-section {
+    grid-template-columns: 1fr;
     gap: 15px;
   }
   
-  .search-controls {
-    flex-direction: column;
-    width: 100%;
+  .chart-container {
+    height: 250px;
+    padding: 15px;
   }
   
-  .search-input {
-    max-width: 100%;
+  .expenses-list {
+    padding: 15px;
+    max-height: 300px;
+  }
+  
+  .expense-item {
+    padding: 12px;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .expense-rank {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  
+  .expense-type {
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .expense-value {
+    font-size: 1.1rem;
+  }
+  
+  .deputies-grid {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  .deputy-card-item {
+    padding: 15px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .deputy-photo img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .deputy-name {
+    font-size: 1rem;
+    white-space: normal;
+    line-height: 1.3;
   }
   
   .deputy-details {
@@ -1053,17 +1180,202 @@ export default {
   }
   
   .deputy-tags {
-    flex-wrap: wrap;
+    gap: 6px;
   }
   
-  .expense-item {
+  .party-chip, .state-chip {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  
+  .expense-amount {
+    font-size: 0.9rem;
+  }
+  
+  .card-header {
+    padding: 15px;
     flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .card-header h3 {
+    font-size: 1.1rem;
     text-align: center;
   }
   
-  .expense-rank {
-    margin-right: 0;
-    margin-bottom: 10px;
+  .search-controls {
+    gap: 12px;
+  }
+  
+  .search-input {
+    font-size: 16px; /* Evita zoom no iOS */
+    padding: 14px 16px;
+  }
+  
+  .sort-controls {
+    gap: 8px;
+  }
+  
+  .sort-select {
+    font-size: 14px;
+    padding: 12px 8px;
+  }
+  
+  .sort-button {
+    padding: 12px;
+    min-width: 44px;
+  }
+  
+  .pagination {
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .pagination-btn {
+    padding: 12px;
+    min-width: 44px;
+    font-size: 14px;
+  }
+  
+  .pagination-btn-mobile {
+    flex: 0 0 auto;
+  }
+  
+  .pagination-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .page-text {
+    font-size: 0.9rem;
+  }
+  
+  .results-text {
+    font-size: 0.8rem;
+  }
+  
+  .floating-action {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
   }
 }
-</style>
+
+/* Responsividade para smartphones pequenos */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+  
+  .display-2 {
+    font-size: 1.5rem;
+  }
+  
+  .dashboard-header {
+    padding: 1rem;
+  }
+  
+  .stats-card {
+    padding: 12px;
+  }
+  
+  .stats-icon {
+    font-size: 2rem;
+  }
+  
+  .stats-number {
+    font-size: 1.3rem;
+  }
+  
+  .chart-container {
+    height: 200px;
+    padding: 10px;
+  }
+  
+  .deputies-grid {
+    padding: 10px;
+    gap: 12px;
+  }
+  
+  .deputy-card-item {
+    padding: 12px;
+  }
+  
+  .deputy-photo img {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .deputy-name {
+    font-size: 0.95rem;
+  }
+  
+  .party-chip, .state-chip {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  
+  .expense-amount {
+    font-size: 0.85rem;
+  }
+  
+  .card-header {
+    padding: 12px;
+  }
+  
+  .card-header h3 {
+    font-size: 1rem;
+  }
+  
+  .search-input {
+    padding: 12px 14px;
+  }
+  
+  .floating-action {
+    bottom: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+}
+
+/* Melhorias para acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .deputy-card-item,
+  .floating-action,
+  .pagination-btn {
+    transition: none;
+  }
+  
+  .floating-action:hover {
+    transform: none;
+  }
+  
+  .deputy-card-item:hover {
+    transform: none;
+  }
+}
+
+/* Ajustes para modo landscape em smartphones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+  
+  .display-2 {
+    font-size: 1.6rem;
+  }
+  
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .deputies-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+ </style>
